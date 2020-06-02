@@ -1,0 +1,82 @@
+-- таблица 1 %_комиссии от продаж
+CREATE TABLE sales_per (
+		city text PRIMARY KEY,
+		rate numeric NOT NULL CONSTRAINT valid_rate CHECK (rate > 0)
+);
+
+INSERT INTO sales_per (city,rate) VALUES
+		('Москва',0.08),
+		('Брянск',0.06),
+		('Тула',0.06),
+		('Питер',0.08),
+		('Калининград',0.05),
+		('Уфа',0.04),
+		('Саранск',0.09),
+		('Хабаровск',0.09);
+		
+-- таблица 2 база продаж 
+CREATE TABLE sales_base (
+		fio text NOT NULL,
+		id_name integer NOT NULL REFERENCES empl (id_name),
+		city text NOT NULL REFERENCES sales_per,
+		sales integer NOT NULL
+);
+
+INSERT INTO sales_base (fio,id_name,city,sales)VALUES
+		('Иванов Иван',111,'Москва',450000),
+		('Петров Андрей',112,'Москва',379000),
+		('Сафонов Алексей',113,'Брянск',250000),
+		('Миронов Андрей',114,'Тула',85000),
+		('Ильина Юля',115,'Питер',155000),
+		('Мялкина Наталья',116,'Питер',900000),
+		('Бутылкин Андрей',117,'Москва',1500000),
+		('Телфонов Кирилл',118,'Брянск',580000)
+
+		
+-- таблица 3 employee
+CREATE TABLE empl (
+		name text NOT NULL, 
+		id_name integer PRIMARY KEY,
+		work_expr numeric NOT NULL CONSTRAINT valid_work_expr CHECK (work_expr >0)
+);
+
+INSERT INTO empl (name,id_name,work_expr) VALUES
+		('Иванов Иван',111,1),
+		('Петров Андрей',112,2),
+		('Сафонов Алексей',113,5),
+		('Миронов Андрей',114,2),
+		('Ильина Юля',115,1),
+		('Мялкина Наталья',116,3),
+		('Бутылкин Андрей',117,2),
+		('Телфонов Кирилл',118,4);
+
+----------------------------------------------------------------------------------------
+--Вывести сотрудников с минимальным и максимальным стажем работы, с указанием города и суммы продаж.
+
+SELECT city,sales, name,work_expr FROM (
+	SELECT id_name,name,work_expr,MIN(work_expr) OVER ()AS min_work_epr,MAX(work_expr) OVER ()AS max_work_epr 
+	FROM empl 
+) AS s1
+INNER JOIN (SELECT id_name,city,sales FROM sales_base)AS s2
+	ON (s2.id_name = s1.id_name)
+WHERE min_work_epr = work_expr OR max_work_epr = work_expr
+ORDER BY name ASC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
