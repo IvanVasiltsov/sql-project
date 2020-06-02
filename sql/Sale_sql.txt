@@ -1,3 +1,5 @@
+
+----
 -- таблица 1 %_комиссии от продаж
 CREATE TABLE sales_per (
 		city text PRIMARY KEY,
